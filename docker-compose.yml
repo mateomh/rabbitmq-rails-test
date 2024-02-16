@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/dev.Dockerfile
+    ports:
+      - 3000:3000
+    # command: rails server -b 0.0.0.0
+    networks:
+      - rabbitmq-network
+    volumes:
+      - ./:/api
+    working_dir: /api
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_PASSWORD=password
+      - DATABASE_USER_NAME=postgres
+      - RAILS_PORT=3000
+    depends_on:
+      - rabbitmq
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /api
+        - action: rebuild
+          path: ./gemfile
+  rabbitmq:
+    image: rabbitmq:3.13-rc-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - rabbitmq-network
+  # db:
+  #   image: postgres:14
+  #   ports:
+  #     - 5432:5432
+  #   environment:
+  #     - POSTGRES_PASSWORD=password
+  #   networks:
+  #     - rabbitmq-network
+
+networks:
+  rabbitmq-network:
+    driver: bridge
