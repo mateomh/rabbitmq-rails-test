@@ -7,4 +7,10 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+
+  # Rabbitmq controller routes, just to trigger an action, no payload
+  get '/fanout',  to: 'rabbitmq#publish_fanout'
+  get '/direct',  to: 'rabbitmq#publish_direct'
+  get '/topic',   to: 'rabbitmq#publish_topic'
+  get '/headers', to: 'rabbitmq#publish_headers' 
 end
